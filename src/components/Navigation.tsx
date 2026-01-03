@@ -21,10 +21,10 @@ export default async function Navigation() {
           />
         </div>
         <div className="flex items-center gap-4">
-          {session ? (
+          {session?.user ? (
             <>
               <span className="text-sm text-zinc-600 dark:text-zinc-400">
-                {session.user?.name}{" "}
+                {session.user.name}{" "}
                 <span className="rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300">
                   {session.user?.role}
                 </span>

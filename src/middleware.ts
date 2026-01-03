@@ -31,14 +31,14 @@ export default auth((req) => {
 
   // 保護パス: 未認証ならログインへリダイレクト
   if (matchesPath(pathname, protectedPaths)) {
-    if (!session) {
+    if (!session?.user) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
   }
 
   // パブリックパス: ログイン済みならホームへリダイレクト
   if (matchesPath(pathname, publicPaths)) {
-    if (session) {
+    if (session?.user) {
       return NextResponse.redirect(new URL("/", req.url));
     }
     return NextResponse.next();

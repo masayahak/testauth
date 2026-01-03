@@ -20,7 +20,7 @@ export type UserRole = "管理者" | "一般";
 export async function requireAuth() {
   const session = await auth();
   
-  if (!session) {
+  if (!session?.user) {
     redirect("/login");
   }
   
