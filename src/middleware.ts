@@ -49,5 +49,5 @@ export default auth((req) => {
 
 export const config = {
   // 静的ファイルとAPIルートを除外
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$).*)"],
 };

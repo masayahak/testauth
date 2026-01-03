@@ -23,8 +23,10 @@ export default function LoginPage() {
     if (result?.error) {
       setError("ユーザー名またはパスワードが正しくありません");
     } else {
-      router.push("/");
+      // 1. まずサーバー側のデータを再取得（ヘッダーのセッション情報などを更新）
       router.refresh();
+      // 2. その後でページ移動
+      router.push("/");
     }
   };
 
@@ -90,4 +92,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
