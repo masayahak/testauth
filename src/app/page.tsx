@@ -15,7 +15,7 @@ export default async function Home() {
             NextAuth v5を使用した認証システムのデモです
           </p>
 
-          {session ? (
+          {session?.user ? (
             <div className="rounded-lg bg-white p-6 shadow-lg dark:bg-zinc-900">
               <p className="text-zinc-600 dark:text-zinc-400">
                 上部のメニューからページを選択してください
