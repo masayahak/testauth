@@ -97,7 +97,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/login",
   },
-  // AWS の 環境変数を読み込めない場合強制
-  trustHost: true,
-  secret: process.env.AUTH_SECRET,
 });
