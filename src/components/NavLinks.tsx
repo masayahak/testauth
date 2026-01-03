@@ -4,11 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 type NavLinksProps = {
+  isLoggedIn: boolean;
   isAdmin: boolean;
 };
 
-export default function NavLinks({ isAdmin }: NavLinksProps) {
+export default function NavLinks({ isLoggedIn, isAdmin }: NavLinksProps) {
   const pathname = usePathname();
+
+  // 未ログインなら何も表示しない（あるいはログインボタンを出すなど）
+  if (!isLoggedIn) {
+    return null;
+  }
 
   // ログインページではリンクを表示しない
   if (pathname === "/login") {
@@ -43,4 +49,3 @@ export default function NavLinks({ isAdmin }: NavLinksProps) {
     </div>
   );
 }
-

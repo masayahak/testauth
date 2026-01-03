@@ -15,7 +15,7 @@ export default async function Navigation() {
           >
             TestAuth
           </Link>
-          <NavLinks isAdmin={session?.user?.role === "管理者"} />
+          <NavLinks isLoggedIn={!!session} isAdmin={session?.user?.role === "管理者"} />
         </div>
         <div className="flex items-center gap-4">
           {session ? (
