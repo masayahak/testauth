@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "TestAuth App",
-  description: "Authentication testing application",
+  description: "NextAuthを含む認証・認可の評価デモ",
 };
 
 export default function RootLayout({
