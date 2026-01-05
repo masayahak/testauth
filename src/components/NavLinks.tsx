@@ -11,13 +11,8 @@ type NavLinksProps = {
 export default function NavLinks({ isLoggedIn, isAdmin }: NavLinksProps) {
   const pathname = usePathname();
 
-  // 未ログインなら何も表示しない（あるいはログインボタンを出すなど）
+  // 未ログインなら何も表示しない
   if (!isLoggedIn) {
-    return null;
-  }
-
-  // ログインページではリンクを表示しない
-  if (pathname === "/login") {
     return null;
   }
 

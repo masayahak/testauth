@@ -10,41 +10,24 @@ import { NextResponse } from "next/server";
  * ※ 権限チェック（管理者か一般か）は AuthGuard が担当する
  */
 
-// 認証が不要なパブリックパス
-const publicPaths = ["/login"];
-
-// 認証が必要な保護パス（これらのパスは未認証ユーザーをリダイレクト）
-const protectedPaths = ["/admin", "/user"];
-
-/**
- * パスがパターンにマッチするかチェック
- */
-function matchesPath(pathname: string, patterns: string[]): boolean {
-  return patterns.some(
-    (pattern) => pathname === pattern || pathname.startsWith(`${pattern}/`)
-  );
-}
-
 export default auth((req) => {
-  const { pathname } = req.nextUrl;
-  const session = req.auth;
+  const isLoggedIn = !!req.auth?.user;
+  const { nextUrl } = req;
 
-  // 保護パス: 未認証ならログインへリダイレクト
-  if (matchesPath(pathname, protectedPaths)) {
-    if (!session?.user) {
-      return NextResponse.redirect(new URL("/login", req.url));
+  // 1. ログインページにいる場合、ログイン済みならルートへ飛ばす（逆流防止）
+  if (nextUrl.pathname === "/login") {
+    if (isLoggedIn) {
+      return NextResponse.redirect(new URL("/", nextUrl));
     }
+    return null; // ログインページを表示
   }
 
-  // パブリックパス: ログイン済みならホームへリダイレクト
-  if (matchesPath(pathname, publicPaths)) {
-    if (session?.user) {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-    return NextResponse.next();
+  // 2. それ以外のページ（ルート含む）で、未ログインならログインへ飛ばす
+  if (!isLoggedIn) {
+    return NextResponse.redirect(new URL("/login", nextUrl));
   }
 
-  return NextResponse.next();
+  return null; // 通過許可
 });
 
 export const config = {

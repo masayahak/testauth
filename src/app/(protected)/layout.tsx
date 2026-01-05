@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
+import Navigation from "@/components/Navigation";
 
 /**
  * Protected Layout - 認証済みユーザー専用レイアウト
@@ -18,5 +19,10 @@ export default async function ProtectedLayout({
   // middleware.tsでも認証チェックしているが、ここでさらに２重チェックしている
   await requireAuth();
 
-  return <>{children}</>;
+  return (
+    <>
+      <Navigation />
+      {children}
+    </>
+  );
 }

@@ -1,34 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { authenticate } from "@/lib/authenticate";
+import { useActionState } from "react";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    const result = await signIn("credentials", {
-      username,
-      password,
-      redirect: false,
-    });
-
-    if (result?.error) {
-      setError("ユーザー名またはパスワードが正しくありません");
-    } else {
-      // 1. まずサーバー側のデータを再取得（ヘッダーのセッション情報などを更新）
-      router.refresh();
-      // 2. その後でページ移動
-      router.push("/");
-    }
-  };
+  // 第1引数: Server Action, 第2引数: 初期状態
+  const [state, dispatch, isPending] = useActionState(authenticate, {
+    message: undefined,
+    errors: undefined,
+  });
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
@@ -36,7 +16,8 @@ export default function LoginPage() {
         <h1 className="mb-6 text-2xl font-bold text-black dark:text-zinc-50">
           ログイン
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form action={dispatch} className="space-y-4">
+          {" "}
           <div>
             <label
               htmlFor="username"
@@ -46,9 +27,8 @@ export default function LoginPage() {
             </label>
             <input
               id="username"
+              name="username"
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
               required
               className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-black dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
               placeholder="admin または user"
@@ -63,24 +43,25 @@ export default function LoginPage() {
             </label>
             <input
               id="password"
+              name="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               required
               className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-black dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
               placeholder="admin123 または user123"
             />
           </div>
-          {error && (
+          {/* エラー表示 */}
+          {state.errors && (
             <div className="rounded-md bg-red-100 p-3 text-sm text-red-700 dark:bg-red-900 dark:text-red-300">
-              {error}
+              {state.errors}
             </div>
           )}
           <button
             type="submit"
-            className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+            disabled={isPending}
+            className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:bg-gray-400"
           >
-            ログイン
+            {isPending ? "ログイン中..." : "ログイン"}
           </button>
         </form>
         <div className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
