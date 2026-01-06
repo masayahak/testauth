@@ -1,9 +1,11 @@
 import { auth, signOut } from "@/auth";
+import { isAdmin } from "@/lib/auth-guard";
 import Link from "next/link";
 import NavLinks from "./NavLinks";
 
 export default async function Navigation() {
   const session = await auth();
+  const isUserAdmin = await isAdmin();
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
@@ -15,10 +17,8 @@ export default async function Navigation() {
           >
             TestAuth
           </Link>
-          <NavLinks
-            isLoggedIn={!!session?.user}
-            isAdmin={session?.user?.role === "管理者"}
-          />
+          {/* ナビゲーションリンクは管理者とそれ以外で分ける  */}
+          <NavLinks isAdmin={isUserAdmin} />
         </div>
         <div className="flex items-center gap-4">
           {session?.user ? (

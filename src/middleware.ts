@@ -1,36 +1,48 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
-
-/**
- * Middleware - 門番（検問）
- *
- * ページが表示される「前」に全リクエストを検閲する。
- * 役割: 認証チェックのみ（ログイン済みかどうか）
- *
- * ※ 権限チェック（管理者か一般か）は AuthGuard が担当する
- */
+import { ROLES } from "@/lib/constants";
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth?.user;
+  const isAdmin = req.auth?.user?.role === ROLES.ADMIN;
   const { nextUrl } = req;
 
-  // 1. ログインページにいる場合、ログイン済みならルートへ飛ばす（逆流防止）
-  if (nextUrl.pathname === "/login") {
+  const isOnLoginPage = nextUrl.pathname === "/login";
+  const isOnAdminPage = nextUrl.pathname.startsWith("/admin");
+
+  // 1. ログイン済みならログインページはパスして、ルートページを表示 (逆流防止)
+  if (isOnLoginPage) {
     if (isLoggedIn) {
       return NextResponse.redirect(new URL("/", nextUrl));
     }
-    return null; // ログインページを表示
+    return null;
   }
 
-  // 2. それ以外のページ（ルート含む）で、未ログインならログインへ飛ばす
+  // 2. 未ログインユーザーはログインページへリダイレクト
   if (!isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", nextUrl));
+    let callbackUrl = nextUrl.pathname;
+    if (nextUrl.search) {
+      callbackUrl += nextUrl.search;
+    }
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+
+    return NextResponse.redirect(
+      // 元のURLをcallbackUrlとして渡すと親切
+      new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+    );
+  }
+
+  // 3. 認可制御: Adminエリア保護
+  if (isOnAdminPage && !isAdmin) {
+    // ルートページへ戻す
+    return NextResponse.redirect(new URL("/", nextUrl));
   }
 
   return null; // 通過許可
 });
 
+// auth関数実行対象
 export const config = {
-  // 静的ファイルとAPIルートを除外
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$).*)"],
+  // api, static, image, favicon 等を除外
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

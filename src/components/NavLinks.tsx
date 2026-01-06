@@ -4,17 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 type NavLinksProps = {
-  isLoggedIn: boolean;
   isAdmin: boolean;
 };
 
-export default function NavLinks({ isLoggedIn, isAdmin }: NavLinksProps) {
+export default function NavLinks({ isAdmin }: NavLinksProps) {
   const pathname = usePathname();
-
-  // 未ログインなら何も表示しない
-  if (!isLoggedIn) {
-    return null;
-  }
 
   return (
     <div className="flex items-center gap-1">
